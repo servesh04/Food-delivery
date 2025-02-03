@@ -6,10 +6,14 @@ import userRouter from "./routes/userRoute.js";
 import "dotenv/config";
 import cartRouter from "./routes/cartRoute.js";
 import orderRouter from "./routes/orderRoute.js";
-
+import { fileURLToPath } from "url";
+import path from "path";
 // app config
 const app = express();
 const port = 5000;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // middleware
 app.use(express.json());
@@ -19,6 +23,7 @@ app.use(
     credentials: true,
   })
 );
+app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
 // db connection
 connectDB();
@@ -32,6 +37,9 @@ app.use("/api/order", orderRouter);
 
 app.get("/", (req, res) => {
   res.send("API Working");
+});
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dist", "index.html"));
 });
 
 app.listen(port, () => {
